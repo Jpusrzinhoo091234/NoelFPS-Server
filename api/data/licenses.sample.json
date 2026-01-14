@@ -1,0 +1,9 @@
+[ 
+  { 
+    "key": "CHAVE-EXEMPLO", 
+    "minutos": 1440, 
+    "usada": false, 
+    "hwid": "", 
+    "expiraEm": null 
+  } 
+]
