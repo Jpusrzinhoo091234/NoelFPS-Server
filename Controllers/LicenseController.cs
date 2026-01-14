@@ -13,7 +13,10 @@ namespace NoelFPS.Server.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ILogger<LicenseController> _logger;
-        private const string AdminApiKey = "NoelFPS-Admin-Secret-Key-2026";
+        
+        // Agora a chave não fica mais escrita no código!
+        // Ela será lida das configurações do servidor (Render/Railway)
+        private string AdminApiKey => Environment.GetEnvironmentVariable("ADMIN_API_KEY") ?? "CHAVE_PADRAO_PARA_TESTE_LOCAL";
 
         public LicenseController(AppDbContext context, ILogger<LicenseController> logger)
         {
