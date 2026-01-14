@@ -15,7 +15,7 @@ namespace NoelFPS.Server.Controllers
         private readonly ILogger<LicenseController> _logger;
         
         // Chave de segurança para o Painel Admin
-        private const string AdminApiKey = "NoelFPS-Admin-Secret-Key-2026";
+        private string AdminApiKey => Environment.GetEnvironmentVariable("ADMIN_API_KEY") ?? "NoelFPS-Admin-Secret-Key-2026";
 
         public LicenseController(AppDbContext context, ILogger<LicenseController> logger)
         {
