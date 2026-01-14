@@ -1,2 +1,0 @@
-# NoelFPS-Server
-NoelFPS-Server
