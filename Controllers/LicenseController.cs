@@ -74,10 +74,23 @@ namespace NoelFPS.Server.Controllers
             });
         }
 
-        [HttpPost("generate")]
-        public async Task<ActionResult<AccessKey>> Generate([FromBody] GenerateKeyRequest request, [FromHeader(Name = "X-Admin-Key")] string adminKey)
+        [HttpGet("list")]
+        public async Task<ActionResult<IEnumerable<AccessKey>>> List()
         {
-            if (adminKey != AdminApiKey) return Unauthorized();
+            var adminKey = Request.Headers["X-Admin-Key"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminKey) || adminKey.Trim() != AdminApiKey.Trim()) 
+            {
+                _logger.LogWarning("Tentativa de acesso não autorizado ao Painel Admin.");
+                return Unauthorized();
+            }
+            return await _context.AccessKeys.OrderByDescending(k => k.CreatedAt).ToListAsync();
+        }
+
+        [HttpPost("generate")]
+        public async Task<ActionResult<AccessKey>> Generate([FromBody] GenerateKeyRequest request)
+        {
+            var adminKey = Request.Headers["X-Admin-Key"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminKey) || adminKey.Trim() != AdminApiKey.Trim()) return Unauthorized();
 
             var newKey = new AccessKey
             {
@@ -93,17 +106,11 @@ namespace NoelFPS.Server.Controllers
             return Ok(newKey);
         }
 
-        [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<AccessKey>>> List([FromHeader(Name = "X-Admin-Key")] string adminKey)
-        {
-            if (adminKey != AdminApiKey) return Unauthorized();
-            return await _context.AccessKeys.OrderByDescending(k => k.CreatedAt).ToListAsync();
-        }
-
         [HttpPost("revoke/{id}")]
-        public async Task<IActionResult> Revoke(int id, [FromHeader(Name = "X-Admin-Key")] string adminKey)
+        public async Task<IActionResult> Revoke(int id)
         {
-            if (adminKey != AdminApiKey) return Unauthorized();
+            var adminKey = Request.Headers["X-Admin-Key"].FirstOrDefault();
+            if (string.IsNullOrEmpty(adminKey) || adminKey.Trim() != AdminApiKey.Trim()) return Unauthorized();
 
             var key = await _context.AccessKeys.FindAsync(id);
             if (key == null) return NotFound();
